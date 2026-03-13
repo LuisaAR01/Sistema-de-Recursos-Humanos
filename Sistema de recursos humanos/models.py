@@ -1,6 +1,7 @@
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 
+
 #coneccion con la base de datos
 def get_connection():
     conn = sqlite3.connect('database.db')
@@ -224,3 +225,58 @@ def obtener_nomina():
 
 
 #Para el login
+def crear_usuario(username, password, rol, empleado_id=None):
+    pasword_hash = generate_password_hash(password)
+
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""INSERT INTO usuarios(username, password, rol, empleado_id) VALUES INTO (?, ?, ?, ?)""", (username, password, rol, empleado_id))
+    conn.commit()
+    conn.close()
+
+
+#Pa Validar el login
+
+def validar_usuario(username, password):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT id, username, password, rol FROM usuarios WHERE username = ?",
+        (username,)
+    )
+
+    usuario = cursor.fetchone()
+    conn.close()
+
+    if usuario:
+        password_hash = usuario[2]
+
+        if check_password_hash(password_hash, password):
+            return usuario
+
+    return None
+
+#pa que se cree un admin por defecto
+def crear_admin_por_defecto():
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    print("Verificando creación de admin...")
+
+    cursor.execute("SELECT * FROM usuarios WHERE username = ?", ("admin",))
+    admin = cursor.fetchone()
+
+    if not admin:
+        print("ADMIN CREADO")
+        password_hash = generate_password_hash("admin")
+
+        cursor.execute("""
+            INSERT INTO usuarios (username, password, rol)
+            VALUES (?, ?, ?)
+        """, ("admin", password_hash, "ADMIN"))
+
+        conn.commit()
+
+    conn.close()
