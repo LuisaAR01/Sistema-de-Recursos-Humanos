@@ -1,0 +1,15 @@
+para forzar a instalar
+ejemplo: py -m pip install flask
+
+ctrl + c para detener el programa
+
+Requerimientos para correr el codigo:
+-Instalar Python
+-Instalar flask (desde la cmd o el mismo visual studio code)
+-Instalar werkzeug
+
+
+Contraseña del usuario "admin":
+-admin
+
+
